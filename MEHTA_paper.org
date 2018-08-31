@@ -1,10 +1,11 @@
 #+STARTUP: showall
 #+STARTUP: latexpreview
 
-MEHTA paper
+MEHTA paper [[https://arxiv.org/abs/1410.3831]]
 
 
 * Ising model Monte Carlo sampler
+- using code at [[https://github.com/pablodecm/ising_model]]
 
 ** Good links
 - org mode monte carlo tutorial: [[https://github.com/prtkm/ising-monte-carlo]]
@@ -23,7 +24,7 @@ Use this to copy stuff bewteen remote/local machines
 
 ** TODO
 - Intuitively Understand free energy $$\mathcal{F}(x)$$ in
-  http://deeplearning.net/tutorial/rbm.html eqs 3 and 4
+  [[http://deeplearning.net/tutorial/rbm.html]] eqs 3 and 4
 
 
 * DBN in python
