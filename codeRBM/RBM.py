@@ -110,17 +110,23 @@ class RBM:
         # probability that hidden unit is 1
         # Gives (n_h x bs) matrix
         pHidData = self._logistic(np.dot(self.w_ij.T, batch) + self.b)
+
         # draw a sample from pHidData
         sampHidData = np.random.binomial(1, pHidData)
+
         # reconstructed visible pdf from the hidden data sample
         pVisRecon = self._logistic(np.dot(self.w_ij, sampHidData) + self.a)
+
         # sample of this pdf
         sampVisRecon = np.random.binomial(1, pVisRecon)
+
         # reconstructed hidden pdf
         pHidRecon = self._logistic(np.dot(self.w_ij.T, pVisRecon) + self.b)
+
         # <v h> correlations for data and reconstructed
         visHidCorrData = (1. / self.bs) * np.dot(batch, pHidData.T)
         visHidCorrRecon = (1. / self.bs) * np.dot(pVisRecon, pHidRecon.T)
+
         # gradient ascent on parameters, with opt L1 regularization
         # TODO check minus sign
         v = momentum * v + trainRate * (visHidCorrData - visHidCorrRecon -

@@ -8,6 +8,9 @@ from RBM import RBM
 plt.rcParams['figure.figsize'] = (15.0, 20.0)
 plt.style.use('dark_background')
 
+# whether to plot evolution of biases during training
+PLOT_BIASES = False
+
 ################################################################################
 
 # load Ising model samples
@@ -40,15 +43,16 @@ aa1st    = np.load("data/couplingsL1.npz")['arr_1']
 bb1st    = np.load("data/couplingsL1.npz")['arr_2']
 rbm1st.setParams(W_ijs1st, aa1st, bb1st)
 
-# Vis unit biases (a)
-plt.rcParams['figure.figsize'] = (20.0, 20.0)
-plt.imshow(aa1st.reshape(40, 40))
-plt.show()
+if PLOT_BIASES:
+    # Vis unit biases (a)
+    plt.rcParams['figure.figsize'] = (20.0, 20.0)
+    plt.imshow(aa1st.reshape(40, 40))
+    plt.show()
 
-# Hid unit biases (b)
-plt.rcParams['figure.figsize'] = (15.0, 10.0)
-plt.imshow(bb1st.reshape(20,20))
-plt.show()
+    # Hid unit biases (b)
+    plt.rcParams['figure.figsize'] = (15.0, 10.0)
+    plt.imshow(bb1st.reshape(20,20))
+    plt.show()
 
 # Plot wijs
 wijs1st = W_ijs1st.T
@@ -82,17 +86,16 @@ aa2nd    = np.load("data/couplingsL2.npz")['arr_1']
 bb2nd    = np.load("data/couplingsL2.npz")['arr_2']
 rbm2nd.setParams(W_ijs2nd, aa2nd, bb2nd)
 
-#%%
-# Vis unit biases (a)
-plt.rcParams['figure.figsize'] = (20.0, 20.0)
-plt.imshow(aa2nd.reshape(20, 20))
-plt.show()
+if PLOT_BIASES:
+    # Vis unit biases (a)
+    plt.rcParams['figure.figsize'] = (20.0, 20.0)
+    plt.imshow(aa2nd.reshape(20, 20))
+    plt.show()
 
-#%%
-# Hid unit biases (b)
-plt.rcParams['figure.figsize'] = (10.0, 5.0)
-plt.imshow(bb2nd.reshape(10,10))
-plt.show()
+    # Hid unit biases (b)
+    plt.rcParams['figure.figsize'] = (10.0, 5.0)
+    plt.imshow(bb2nd.reshape(10,10))
+    plt.show()
 
 #%%
 wijs2nd = W_ijs2nd.T
@@ -138,15 +141,16 @@ np.savez_compressed("data/couplingsL3.npz", W_ijs3rd, aa3rd, bb3rd)
 # bb3rd    = np.load("data/couplingsL3.npz")['arr_2']
 # rbm3rd.setParams(W_ijs3rd, aa3rd, bb3rd)
 
-# Vis unit biases (a)
-plt.rcParams['figure.figsize'] = (20.0, 20.0)
-plt.imshow(aa3rd.reshape(10, 10))
-plt.show()
+if PLOT_BIASES:
+    # Vis unit biases (a)
+    plt.rcParams['figure.figsize'] = (20.0, 20.0)
+    plt.imshow(aa3rd.reshape(10, 10))
+    plt.show()
 
-# Hid unit biases (b)
-plt.rcParams['figure.figsize'] = (10.0, 5.0)
-plt.imshow(bb3rd.reshape(5, 5))
-plt.show()
+    # Hid unit biases (b)
+    plt.rcParams['figure.figsize'] = (10.0, 5.0)
+    plt.imshow(bb3rd.reshape(5, 5))
+    plt.show()
 
 wijs3rd = W_ijs3rd.T
 plt.rcParams['figure.figsize'] = (15.0, 20.0)
