@@ -87,11 +87,13 @@ rbm2nd.setParams(W_ijs2nd, aa2nd, bb2nd)
 plt.rcParams['figure.figsize'] = (20.0, 20.0)
 plt.imshow(aa2nd.reshape(20, 20))
 plt.show()
+
 #%%
 # Hid unit biases (b)
 plt.rcParams['figure.figsize'] = (10.0, 5.0)
 plt.imshow(bb2nd.reshape(10,10))
 plt.show()
+
 #%%
 wijs2nd = W_ijs2nd.T
 plt.rcParams['figure.figsize'] = (15.0, 20.0)
@@ -100,10 +102,11 @@ for i in range(20):
     plt.subplot(10, 10, i+1)
     plt.imshow(wijs2nd[i].reshape(20, 20))
 plt.show()
+
 #%%
 # reconstruction of full receptor fields
 recept2nd = [(1/4e2) * np.dot(wijs2nd[i, :], wijs1st) for i in range(n_h2)]
-#%%
+
 plt.rcParams['figure.figsize'] = (15.0, 20.0)
 for i in range(50):
     plt.subplot(10, 5, i+1)
@@ -130,9 +133,9 @@ W_ijs3rd, aa3rd, bb3rd = rbm3rd.train(data3rd, numEpochs, learnRate, True,
                                       False, regWeight, mom, logInt)
 np.savez_compressed("data/couplingsL3.npz", W_ijs3rd, aa3rd, bb3rd)
 
-# W_ijs3rd = np.load("data/couplingsL3.npz")['arr_0'][0]
-# aa3rd    = np.load("data/couplingsL3.npz")['arr_1'][0]
-# bb3rd    = np.load("data/couplingsL3.npz")['arr_2'][0]
+# W_ijs3rd = np.load("data/couplingsL3.npz")['arr_0']
+# aa3rd    = np.load("data/couplingsL3.npz")['arr_1']
+# bb3rd    = np.load("data/couplingsL3.npz")['arr_2']
 # rbm3rd.setParams(W_ijs3rd, aa3rd, bb3rd)
 
 # Vis unit biases (a)
