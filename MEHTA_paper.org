@@ -1,0 +1,41 @@
+#+STARTUP: showall
+#+STARTUP: latexpreview
+
+MEHTA paper
+
+
+* Ising model Monte Carlo sampler
+
+** Good links
+- org mode monte carlo tutorial: [[https://github.com/prtkm/ising-monte-carlo]]
+  
+*** google cloud platform
+Using this to work with multicore cpu
+- external ip: - 35.199.186.39, tcp port: 7000
+
+Use this to copy stuff bewteen remote/local machines
+- 'gcloud compute scp [INSTANCE_NAME]:[REMOTE_FILE_PATH] [LOCAL_FILE_PATH]'
+- 'gcloud compute scp [LOCAL_FILE_PATH] [INSTANCE_NAME]:~/'
+
+
+
+* RBM in python
+
+** TODO
+- Intuitively Understand free energy $$\mathcal{F}(x)$$ in
+  http://deeplearning.net/tutorial/rbm.html eqs 3 and 4
+
+
+* DBN in python
+
+
+
+
+
+
+
+
+
+
+
+
