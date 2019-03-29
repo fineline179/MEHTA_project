@@ -2,8 +2,9 @@
 
 # imports and setup
 import numpy as np
+import torch
 import matplotlib.pyplot as plt
-from RBM import RBM
+from RBM_torch import RBM
 
 plt.rcParams['figure.figsize'] = (15.0, 20.0)
 plt.style.use('dark_background')
@@ -28,12 +29,17 @@ data = np.reshape(dataOrig, (numSamp, n_v)).T
 data1st = np.copy(data)
 print("data1st shape =", str(data1st.shape))
 
+# setup torch device
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 # %%############################################################################
 # FIRST LAYER RBM
 ################################################################################
 print("Layer 1/3")
 rbm1st = RBM(n_v, n_h, numSamp, batchSize)
 numEpochs, learnRate, regWeight, mom, logInt = 50, 0.1, 0.008, 0.5, 1
+
+
 
 ## REALLY SLOW. Load data below instead
 # train for ___ epochs, with learning rate 0.1

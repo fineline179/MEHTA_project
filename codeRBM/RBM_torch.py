@@ -4,7 +4,8 @@
 import numpy as np
 from tqdm import tqdm # progress monitor
 import torch
-
+import torch.nn as nn
+from torch.distributions.bernoulli import Bernoulli
 
 class RBM:
   def __init__(self, numVis, numHid, numTrain, bs):
@@ -13,6 +14,7 @@ class RBM:
     self.m = numTrain
     self.bs = bs
     self.trained = False
+    self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
   def setParams(self, W, a, b):
     ''' Sets RBM parameters.
@@ -20,7 +22,9 @@ class RBM:
                   "a" - (n_v x 1) vector of trained visible biases
                   "b" - (n_h x 1) vector of trained hidden biases
     '''
-    self.w_ij, self.a, self.b = W, a, b
+    self.w_ij = torch.from_numpy(W).to(self.device)
+    self.a = torch.from_numpy(a).to(self.device)
+    self.b = torch.from_numpy(b).to(self.device)
     self.trained = True
 
   def train(self, data, numEpochs, trainRate, biasesTo0=False, allParams=False,
@@ -41,14 +45,16 @@ class RBM:
     '''
     # make sure data is of specified shape
     assert (data.shape[0] == self.n_v)
+    data_t = torch.from_numpy(data).to(self.device)
     # number of samples must be integer multiple of bs
     assert (np.mod(data.shape[1], self.bs) == 0)
 
-    batchesInSample = self.m / self.bs
+    batchesInSample = self.m // self.bs
 
     # Init biases
     if biasesTo0 is True:
-      self.a, self.b = torch.zeros(self.n_v, 1), torch.zeros(self.n_h, 1)
+      self.a = torch.zeros(self.n_v, 1).to(self.device)
+      self.b = torch.zeros(self.n_h, 1).to(self.device)
     else:
       # fraction of samples with i'th spin on (HINTON section 8)
       vp = 1. * torch.sum(data, dim=1, keepdim=True) / self.m
@@ -58,6 +64,7 @@ class RBM:
     # TODO
     np_rng = np.random.RandomState(1234)
     self.w_ij = np_rng.normal(0, 0.01, size=(self.n_v, self.n_h))
+    self.w_ij = torch.from_numpy(self.w_ij).to(self.device)
 
     # Placeholder for momentum
     v = torch.zeros(self.w_ij.shape)
@@ -67,7 +74,7 @@ class RBM:
 
     for i in tqdm(range(numEpochs)):
       # randomize sample order for this epoch
-      dataThisEpoch = torch.clone(data)
+      dataThisEpoch = torch.clone(data_t)
       dataThisEpoch = dataThisEpoch[:, torch.randperm(self.m)]
 
       # make batches for this epoch
@@ -76,21 +83,68 @@ class RBM:
       for batch in batches:
         # probability that hidden unit is 1
         # Gives (n_h x bs) matrix
-        pHidData = self._logistic(torch.dot(self.w_ij.transpose(0, 1), batch) +
-                                  self.b)
+        pHidData = self._logistic(torch.dot(self.w_ij.transpose(0, 1),
+                                            batch) + self.b)
 
-      # draw a sample from pHidData
-      ber = torch.distributions.Bernoulli()
+        # random_probabilities = torch.rand_like(pHidData).to(self.device)
+        # sampHidData = (pHidData >= random_probabilities).float()
+        sampHidData = Bernoulli(pHidData).sample().to(self.device)
 
-      randProb = torch.rand()
-      sampHidData = np.random.binomial(1, pHidData)
+        # reconstructed visible pdf from the hidden data sample
+        pVisRecon = self._logistic(torch.dot(self.w_ij, sampHidData) + self.a)
 
-      # reconstructed visible pdf from the hidden data sample
-      pVisRecon = self._logistic(torch.dot(self.w_ij, sampHidData) + self.a)
+        # reconstructed hidden pdf
+        pHidRecon = self._logistic(torch.dot(self.w_ij.T, pVisRecon) + self.b)
+
+        # <v h> correlations for data and reconstructed
+        visHidCorrData = \
+          torch.dot(batch, pHidData.transpose(0, 1)) / self.bs
+        visHidCorrRecon = \
+          torch.dot(pVisRecon, pHidRecon.transpose(0, 1)) / self.bs
+
+        # gradient ascent on parameters, with opt L1 regularization
+        # TODO check minus sign
+        v = momentum * v + trainRate * (visHidCorrData - visHidCorrRecon -
+                                        l1RegWeight * torch.sign(self.w_ij))
+
+        self.w_ij += v
+        if biasesTo0 is False:
+          self.a += (trainRate / self.bs) * \
+                    torch.sum(batch - pVisRecon, dim=1, keepdims=True)
+          self.b += (trainRate / self.bs) * \
+                    torch.sum(pHidData - pHidRecon, dim=1, keepdims=True)
+
+      # log weights during training if 'allParams' is set
+      if allParams == True and i % log_interval == 0:
+        w_ijs.append(self.w_ij)
+        aa.append(self.a)
+        bb.append(self.b)
+
+    # final result
+    w_ijs.append(self.w_ij)
+    aa.append(self.a)
+    bb.append(self.b)
+
+    self.trained = True
+    return w_ijs, aa, bb
 
 
   def _logistic(self, x):
     return 1.0 / (1 + torch.exp(-x))
+
+  def vToh(self, vis):
+    assert (self.trained == True)
+    assert (vis.shape[0] == self.n_v)
+
+    # Calculate final hidden activations from final model
+    return self._logistic(np.dot(self.w_ij.T, vis) + self.b)
+
+  def hTov(self, hid):
+    assert (self.trained == True)
+    assert (hid.shape[0] == self.n_h)
+
+    # Figure out what biases to put in here (compare vToH function, above)
+    return self._logistic(np.dot(self.w_ij, hid))
 
 
 
