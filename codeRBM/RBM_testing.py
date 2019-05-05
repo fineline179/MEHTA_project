@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # %% code based on http://www.cs.toronto.edu/~hinton/MatlabForSciencePaper.html
 
 # imports and setup
