@@ -115,17 +115,17 @@ class RBM:
 
       # log weights during training if 'allParams' is set
       if allParams == True and i % log_interval == 0:
-        w_ijs.append(self.w_ij)
-        aa.append(self.a)
-        bb.append(self.b)
+        w_ijs.append(self.w_ij.cpu().numpy())
+        aa.append(self.a.cpu().numpy())
+        bb.append(self.b.cpu().numpy())
 
     # final result
-    w_ijs.append(self.w_ij)
-    aa.append(self.a)
-    bb.append(self.b)
+    w_ijs.append(self.w_ij.cpu().numpy())
+    aa.append(self.a.cpu().numpy())
+    bb.append(self.b.cpu().numpy())
 
     self.trained = True
-    return w_ijs.cpu().numpy(), aa.cpu().numpy(), bb.cpu().numpy()
+    return w_ijs, aa, bb
 
 
   def _logistic(self, x):
