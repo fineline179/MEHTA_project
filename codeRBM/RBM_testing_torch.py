@@ -11,8 +11,10 @@ from codeRBM.RBM_torch import RBM
 plt.rcParams['figure.figsize'] = (15.0, 20.0)
 plt.style.use('dark_background')
 
-# whether to plot evolution of biases during training
+# plot flags
 PLOT_BIASES = False
+PLOT_WEIGHTS = False
+PLOT_RECON = False
 
 # load Ising model samples
 dataOrig = np.load(
@@ -31,6 +33,7 @@ print("data1st shape =", str(data1st.shape))
 
 # setup torch device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print('training on device: {}\n'.format(device))
 
 # %%############################################################################
 # FIRST LAYER RBM
@@ -67,12 +70,13 @@ if PLOT_BIASES:
 
 # Plot wijs
 wijs1st = W_ijs1st.T
-plt.rcParams['figure.figsize'] = (20.0, 20.0)
-print("wijs1st shape =", wijs1st.shape)
-for i in range(100):
-    plt.subplot(10, 10, i + 1)
-    plt.imshow(wijs1st[i].reshape(40, 40))
-plt.show()
+if PLOT_WEIGHTS:
+    plt.rcParams['figure.figsize'] = (20.0, 20.0)
+    print("wijs1st shape =", wijs1st.shape)
+    for i in range(100):
+        plt.subplot(10, 10, i + 1)
+        plt.imshow(wijs1st[i].reshape(40, 40))
+    plt.show()
 
 # %%############################################################################
 # SECOND LAYER RBM
@@ -109,22 +113,24 @@ if PLOT_BIASES:
 
 # %%
 wijs2nd = W_ijs2nd.T
-plt.rcParams['figure.figsize'] = (15.0, 20.0)
-print("wijs2nd shape =", wijs2nd.shape)
-for i in range(20):
-    plt.subplot(10, 10, i + 1)
-    plt.imshow(wijs2nd[i].reshape(20, 20))
-plt.show()
+if PLOT_WEIGHTS:
+    plt.rcParams['figure.figsize'] = (15.0, 20.0)
+    print("wijs2nd shape =", wijs2nd.shape)
+    for i in range(20):
+        plt.subplot(10, 10, i + 1)
+        plt.imshow(wijs2nd[i].reshape(20, 20))
+    plt.show()
 
 # %%
 # reconstruction of full receptor fields
 recept2nd = [(1 / 4e2) * np.dot(wijs2nd[i, :], wijs1st) for i in range(n_h2)]
 
-plt.rcParams['figure.figsize'] = (15.0, 20.0)
-for i in range(50):
-    plt.subplot(10, 5, i + 1)
-    plt.imshow(recept2nd[i].reshape(40, 40))
-plt.show()
+if PLOT_RECON:
+    plt.rcParams['figure.figsize'] = (15.0, 20.0)
+    for i in range(50):
+        plt.subplot(10, 5, i + 1)
+        plt.imshow(recept2nd[i].reshape(40, 40))
+    plt.show()
 
 # %%############################################################################
 # THIRD LAYER RBM
@@ -162,22 +168,24 @@ if PLOT_BIASES:
     plt.show()
 
 wijs3rd = W_ijs3rd.T
-plt.rcParams['figure.figsize'] = (15.0, 20.0)
-print("wijs3rd shape=", wijs3rd.shape)
-for i in range(25):
-    plt.subplot(10, 10, i + 1)
-    plt.imshow(wijs3rd[i].reshape(10, 10))
-plt.show()
+if PLOT_WEIGHTS:
+    plt.rcParams['figure.figsize'] = (15.0, 20.0)
+    print("wijs3rd shape=", wijs3rd.shape)
+    for i in range(25):
+        plt.subplot(10, 10, i + 1)
+        plt.imshow(wijs3rd[i].reshape(10, 10))
+    plt.show()
 
 # reconstruction of full receptor fields
 recept3rd = [(1 / 4e4) * np.dot(np.dot(wijs3rd[i, :], wijs2nd), wijs1st) for i
              in range(n_h3)]
 
-plt.rcParams['figure.figsize'] = (15.0, 8.0)
-for i in range(25):
-    plt.subplot(3, 10, i + 1)
-    plt.imshow(recept3rd[i].reshape(40, 40))
-plt.show()
+if PLOT_RECON:
+    plt.rcParams['figure.figsize'] = (15.0, 8.0)
+    for i in range(25):
+        plt.subplot(3, 10, i + 1)
+        plt.imshow(recept3rd[i].reshape(40, 40))
+    plt.show()
 
 # %%############################################################################
 # RECONSTRUCT DATA (improperly)
@@ -205,17 +213,18 @@ dataReconTHREE = wijs1st.T.dot(hidL1).reshape((40, 40, 5))
 # Not sure about the numerical weighting factors here...
 dataRecon = dataReconONE + 100 * dataReconTWO + 400 * 100 * dataReconTHREE
 
-for i in range(recon_num):
-    # reconstructed samples
-    plt.subplot(3, recon_num, i + 1)
-    plt.imshow(dataRecon[:, :, i])
-    # reconstructed samples binarized
-    plt.subplot(3, recon_num, i + 1 + recon_num)
-    plt.imshow(dataRecon[:, :, i] > 0)
-    # original samples
-    plt.subplot(3, recon_num, i + 1 + 2 * recon_num)
-    plt.imshow(dataL[:, i].reshape(40, 40))
-plt.show()
+if PLOT_RECON:
+    for i in range(recon_num):
+        # reconstructed samples
+        plt.subplot(3, recon_num, i + 1)
+        plt.imshow(dataRecon[:, :, i])
+        # reconstructed samples binarized
+        plt.subplot(3, recon_num, i + 1 + recon_num)
+        plt.imshow(dataRecon[:, :, i] > 0)
+        # original samples
+        plt.subplot(3, recon_num, i + 1 + 2 * recon_num)
+        plt.imshow(dataL[:, i].reshape(40, 40))
+    plt.show()
 
 # %%############################################################################
 # RECONSTRUCT ALL DATA POINTS
@@ -231,15 +240,16 @@ hidL2_back = rbm3rd.hTov(hidL3)
 hidL1_back = rbm2nd.hTov(hidL2_back)
 dataL_back = rbm1st.hTov(hidL1_back)
 
-for i in range(recon_num):
-    # reconstructed samples
-    dataL_backRes = dataL_back[:, i].reshape(40, 40)
-    plt.subplot(3, recon_num, i + 1)
-    plt.imshow(dataL_backRes)
-    # reconstructed samples binarized
-    plt.subplot(3, recon_num, i + 1 + recon_num)
-    plt.imshow(dataL_backRes > 0.5)
-    # original samples
-    plt.subplot(3, recon_num, i + 1 + 2 * recon_num)
-    plt.imshow(dataL[:, i].reshape(40, 40))
-plt.show()
+if PLOT_RECON:
+    for i in range(recon_num):
+        # reconstructed samples
+        dataL_backRes = dataL_back[:, i].reshape(40, 40)
+        plt.subplot(3, recon_num, i + 1)
+        plt.imshow(dataL_backRes)
+        # reconstructed samples binarized
+        plt.subplot(3, recon_num, i + 1 + recon_num)
+        plt.imshow(dataL_backRes > 0.5)
+        # original samples
+        plt.subplot(3, recon_num, i + 1 + 2 * recon_num)
+        plt.imshow(dataL[:, i].reshape(40, 40))
+    plt.show()
