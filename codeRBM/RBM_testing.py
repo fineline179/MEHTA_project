@@ -1,9 +1,10 @@
 # %% code based on http://www.cs.toronto.edu/~hinton/MatlabForSciencePaper.html
 
 # imports and setup
+import os
 import numpy as np
 import matplotlib.pyplot as plt
-from RBM import RBM
+from codeRBM.RBM import RBM
 
 plt.rcParams['figure.figsize'] = (15.0, 20.0)
 plt.style.use('dark_background')
@@ -11,14 +12,12 @@ plt.style.use('dark_background')
 # whether to plot evolution of biases during training
 PLOT_BIASES = False
 
-# TESTING SSH GITHUB ACCESS
-
-################################################################################
-
 # load Ising model samples
 dataOrig = np.load(
     "/home/fineline/projects/MEHTA_project/data"
     "/outputTest30000updates20000samples.npz")['arr_0']
+
+os.chdir("/home/fineline/projects/MEHTA_project/codeRBM")
 
 numSamp, batchSize, = dataOrig.shape[0], 100
 n_v, n_h = dataOrig.shape[1] * dataOrig.shape[2], 400
