@@ -23,7 +23,7 @@ dataOrig = np.load(
 
 os.chdir("/home/fineline/projects/MEHTA_project/codeRBM")
 
-numSamp, batchSize = dataOrig.shape[0], 100
+numSamp, batchSize = dataOrig.shape[0], 1000
 n_v, n_h = dataOrig.shape[1] * dataOrig.shape[2], 400
 
 data = np.reshape(dataOrig, (numSamp, n_v)).T
@@ -85,7 +85,7 @@ print("Layer 2/3")
 # data for input to 2nd layer RBM
 data2nd = rbm1st.vToh(data1st)
 # setup 2nd RBM
-numSamp, batchSize, n_v2, n_h2 = dataOrig.shape[0], 100, 400, 100
+numSamp, batchSize, n_v2, n_h2 = dataOrig.shape[0], 1000, 400, 100
 rbm2nd = RBM(n_v2, n_h2, numSamp, batchSize)
 numEpochs, learnRate, regWeight, mom, logInt = 100, 0.1, 0.008, 0.5, 1
 
@@ -139,7 +139,7 @@ print("Layer 3/3")
 # data for input to 3rd layer RBM
 data3rd = rbm2nd.vToh(data2nd)
 # setup 3nd RBM
-numSamp, batchSize, n_v3, n_h3 = dataOrig.shape[0], 100, 100, 25
+numSamp, batchSize, n_v3, n_h3 = dataOrig.shape[0], 1000, 100, 25
 rbm3rd = RBM(n_v3, n_h3, numSamp, batchSize)
 # TODO: do an SMO over these parameters
 # numEpochs, learnRate, regWeight, mom, logInt = 100, 0.1, 0.008, 0.6, 1
