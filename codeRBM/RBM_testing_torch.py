@@ -50,11 +50,11 @@ W_ijs1st, aa1st, bb1st = rbm1st.train(data1st, numEpochs, learnRate,
                                       l1RegWeight=regWeight,
                                       momentum=mom,
                                       log_interval=logInt)
-np.savez_compressed("data/couplingsL1.npz", W_ijs1st, aa1st, bb1st)
+np.savez_compressed("data/torch/couplingsL1.npz", W_ijs1st, aa1st, bb1st)
 
-W_ijs1st = np.squeeze(np.load("data/couplingsL1.npz")['arr_0'], axis=0)
-aa1st    = np.squeeze(np.load("data/couplingsL1.npz")['arr_1'], axis=0)
-bb1st    = np.squeeze(np.load("data/couplingsL1.npz")['arr_2'], axis=0)
+W_ijs1st = np.squeeze(np.load("data/torch/couplingsL1.npz")['arr_0'], axis=0)
+aa1st    = np.squeeze(np.load("data/torch/couplingsL1.npz")['arr_1'], axis=0)
+bb1st    = np.squeeze(np.load("data/torch/couplingsL1.npz")['arr_2'], axis=0)
 rbm1st.setParams(W_ijs1st, aa1st, bb1st)
 
 if PLOT_BIASES:
@@ -93,11 +93,11 @@ numEpochs, learnRate, regWeight, mom, logInt = 100, 0.1, 0.008, 0.5, 1
 # train for ___ epochs, with learning rate 0.1
 W_ijs2nd, aa2nd, bb2nd = rbm2nd.train(data2nd, numEpochs, learnRate, True,
                                       False, regWeight, mom, logInt)
-np.savez_compressed("data/couplingsL2.npz", W_ijs2nd, aa2nd, bb2nd)
+np.savez_compressed("data/torch/couplingsL2.npz", W_ijs2nd, aa2nd, bb2nd)
 
-W_ijs2nd = np.squeeze(np.load("data/couplingsL2.npz")['arr_0'], axis=0)
-aa2nd    = np.squeeze(np.load("data/couplingsL2.npz")['arr_1'], axis=0)
-bb2nd    = np.squeeze(np.load("data/couplingsL2.npz")['arr_2'], axis=0)
+W_ijs2nd = np.squeeze(np.load("data/torch/couplingsL2.npz")['arr_0'], axis=0)
+aa2nd    = np.squeeze(np.load("data/torch/couplingsL2.npz")['arr_1'], axis=0)
+bb2nd    = np.squeeze(np.load("data/torch/couplingsL2.npz")['arr_2'], axis=0)
 rbm2nd.setParams(W_ijs2nd, aa2nd, bb2nd)
 
 if PLOT_BIASES:
@@ -149,11 +149,11 @@ numEpochs, learnRate, regWeight, mom, logInt = 100, 0.2, 0.0008, 0.9, 1
 # train for numEpochs, at learnRate
 W_ijs3rd, aa3rd, bb3rd = rbm3rd.train(data3rd, numEpochs, learnRate, True,
                                       False, regWeight, mom, logInt)
-np.savez_compressed("data/couplingsL3.npz", W_ijs3rd, aa3rd, bb3rd)
+np.savez_compressed("data/torch/couplingsL3.npz", W_ijs3rd, aa3rd, bb3rd)
 
-W_ijs3rd = np.squeeze(np.load("data/couplingsL3.npz")['arr_0'], axis=0)
-aa3rd    = np.squeeze(np.load("data/couplingsL3.npz")['arr_1'], axis=0)
-bb3rd    = np.squeeze(np.load("data/couplingsL3.npz")['arr_2'], axis=0)
+W_ijs3rd = np.squeeze(np.load("data/torch/couplingsL3.npz")['arr_0'], axis=0)
+aa3rd    = np.squeeze(np.load("data/torch/couplingsL3.npz")['arr_1'], axis=0)
+bb3rd    = np.squeeze(np.load("data/torch/couplingsL3.npz")['arr_2'], axis=0)
 rbm3rd.setParams(W_ijs3rd, aa3rd, bb3rd)
 
 if PLOT_BIASES:
