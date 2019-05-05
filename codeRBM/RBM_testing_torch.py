@@ -40,7 +40,7 @@ print('training on device: {}\n'.format(device))
 ################################################################################
 print("Layer 1/3")
 rbm1st = RBM(n_v, n_h, numSamp, batchSize)
-numEpochs, learnRate, regWeight, mom, logInt = 50, 0.1, 0.008, 0.5, 1
+numEpochs, learnRate, regWeight, mom, logInt = 200, 0.1, 0.008, 0.5, 1
 
 ## REALLY SLOW. Load data below instead
 # train for ___ epochs, with learning rate 0.1
@@ -87,7 +87,7 @@ data2nd = rbm1st.vToh(data1st)
 # setup 2nd RBM
 numSamp, batchSize, n_v2, n_h2 = dataOrig.shape[0], 1000, 400, 100
 rbm2nd = RBM(n_v2, n_h2, numSamp, batchSize)
-numEpochs, learnRate, regWeight, mom, logInt = 100, 0.1, 0.008, 0.5, 1
+numEpochs, learnRate, regWeight, mom, logInt = 400, 0.1, 0.008, 0.5, 1
 
 ## PRETTY SLOW. Load data below instead
 # train for ___ epochs, with learning rate 0.1
@@ -143,7 +143,7 @@ numSamp, batchSize, n_v3, n_h3 = dataOrig.shape[0], 1000, 100, 25
 rbm3rd = RBM(n_v3, n_h3, numSamp, batchSize)
 # TODO: do an SMO over these parameters
 # numEpochs, learnRate, regWeight, mom, logInt = 100, 0.1, 0.008, 0.6, 1
-numEpochs, learnRate, regWeight, mom, logInt = 100, 0.2, 0.0008, 0.9, 1
+numEpochs, learnRate, regWeight, mom, logInt = 400, 0.2, 0.0008, 0.9, 1
 
 ## SLOWISH. Load data below instead
 # train for numEpochs, at learnRate
