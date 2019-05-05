@@ -12,8 +12,8 @@ plt.style.use('dark_background')
 
 # plot flags
 PLOT_BIASES = False
-PLOT_WEIGHTS = False
-PLOT_RECON = False
+PLOT_WEIGHTS = True
+PLOT_RECON = True
 
 # load Ising model samples
 dataOrig = np.load(
@@ -39,13 +39,13 @@ numEpochs, learnRate, regWeight, mom, logInt = 50, 0.1, 0.008, 0.5, 1
 
 ## REALLY SLOW. Load data below instead
 # train for ___ epochs, with learning rate 0.1
-# W_ijs1st, aa1st, bb1st = rbm1st.train(data1st, numEpochs, learnRate,
-#                                       biasesTo0=True,
-#                                       allParams=False,
-#                                       l1RegWeight=regWeight,
-#                                       momentum=mom,
-#                                       log_interval=logInt)
-# np.savez_compressed("data/couplingsL1.npz", W_ijs1st, aa1st, bb1st)
+W_ijs1st, aa1st, bb1st = rbm1st.train(data1st, numEpochs, learnRate,
+                                      biasesTo0=True,
+                                      allParams=False,
+                                      l1RegWeight=regWeight,
+                                      momentum=mom,
+                                      log_interval=logInt)
+np.savez_compressed("data/couplingsL1.npz", W_ijs1st, aa1st, bb1st)
 
 W_ijs1st = np.squeeze(np.load("data/couplingsL1.npz")['arr_0'], axis=0)
 aa1st    = np.squeeze(np.load("data/couplingsL1.npz")['arr_1'], axis=0)
@@ -106,7 +106,7 @@ if PLOT_BIASES:
     plt.imshow(bb2nd.reshape(10, 10))
     plt.show()
 
-# %%
+
 wijs2nd = W_ijs2nd.T
 if PLOT_WEIGHTS:
     plt.rcParams['figure.figsize'] = (15.0, 20.0)
@@ -116,7 +116,6 @@ if PLOT_WEIGHTS:
         plt.imshow(wijs2nd[i].reshape(20, 20))
     plt.show()
 
-# %%
 # reconstruction of full receptor fields
 recept2nd = [(1 / 4e2) * np.dot(wijs2nd[i, :], wijs1st) for i in range(n_h2)]
 

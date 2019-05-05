@@ -92,8 +92,9 @@ class RBM:
     v = np.zeros(self.w_ij.shape)
 
     # For all w_ijs, as, and bs in run
-    w_ijs, aa, bb = np.array([self.w_ij]), np.array([self.a]), \
-                    np.array([self.b])
+    w_ijs, aa, bb = [], [], []
+    # w_ijs, aa, bb = np.array([self.w_ij]), np.array([self.a]), \
+    #                 np.array([self.b])
 
     # This is the train routine. At the end of this loop, we should have an
     #  [array if allParams set] of w_ij matrices -- one for every gradient
@@ -140,22 +141,22 @@ class RBM:
 
       # log weights during training if 'allParams' is set
       if allParams == True and i % log_interval == 0:
-        w_ijs = np.vstack([w_ijs, [self.w_ij]])
-        aa = np.vstack([aa, [self.a]])
-        bb = np.vstack([bb, [self.b]])
+        w_ijs.append(self.w_ij)
+        aa.append(self.a)
+        bb.append(self.b)
+
+        # w_ijs = np.vstack([w_ijs, [self.w_ij]])
+        # aa = np.vstack([aa, [self.a]])
+        # bb = np.vstack([bb, [self.b]])
 
     # final result
-    w_ijs = np.vstack([w_ijs, [self.w_ij]])
-    aa = np.vstack([aa, [self.a]])
-    bb = np.vstack([bb, [self.b]])
+    w_ijs.append(self.w_ij)
+    aa.append(self.a)
+    bb.append(self.b)
 
-    # kill duplicate first element
-    w_ijs, aa, bb = w_ijs[1:], aa[1:], bb[1:]
-
-    # if we didn't log weights during training, eliminate unnecessary first
-    # index of weight arrays.
-    if len(w_ijs) == 1:
-      w_ijs, aa, bb = w_ijs[0], aa[0], bb[0]
+    # w_ijs = np.vstack([w_ijs, [self.w_ij]])
+    # aa = np.vstack([aa, [self.a]])
+    # bb = np.vstack([bb, [self.b]])
 
     self.trained = True
     return w_ijs, aa, bb
