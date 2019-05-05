@@ -131,20 +131,23 @@ class RBM:
   def _logistic(self, x):
     return 1.0 / (1 + torch.exp(-x))
 
+  def _logisticnp(self, x):
+    return 1.0 / (1 + np.exp(-x))
+
   def vToh(self, vis):
     assert (self.trained == True)
     assert (vis.shape[0] == self.n_v)
 
     # Calculate final hidden activations from final model
-    return self._logistic(np.dot(self.w_ij.cpu().numpy().T, vis) +
-                          self.b.cpu().numpy())
+    return self._logisticnp(np.dot(self.w_ij.cpu().numpy().T, vis) +
+                            self.b.cpu().numpy())
 
   def hTov(self, hid):
     assert (self.trained == True)
     assert (hid.shape[0] == self.n_h)
 
     # Figure out what biases to put in here (compare vToH function, above)
-    return self._logistic(np.dot(self.w_ij.cpu().numpy(), hid))
+    return self._logisticnp(np.dot(self.w_ij.cpu().numpy(), hid))
 
 
 
