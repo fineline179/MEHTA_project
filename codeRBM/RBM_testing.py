@@ -19,7 +19,7 @@ dataOrig = np.load(
 
 os.chdir("/home/fineline/projects/MEHTA_project/codeRBM")
 
-numSamp, batchSize, = dataOrig.shape[0], 100
+numSamp, batchSize = dataOrig.shape[0], 100
 n_v, n_h = dataOrig.shape[1] * dataOrig.shape[2], 400
 
 data = np.reshape(dataOrig, (numSamp, n_v)).T

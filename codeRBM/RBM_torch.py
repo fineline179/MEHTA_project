@@ -53,12 +53,13 @@ class RBM:
 
     # Init biases
     if biasesTo0 is True:
-      self.a = torch.zeros(self.n_v, 1).to(self.device)
-      self.b = torch.zeros(self.n_h, 1).to(self.device)
+      self.a = torch.zeros(self.n_v, 1).type(torch.DoubleTensor).to(self.device)
+      self.b = torch.zeros(self.n_h, 1).type(torch.DoubleTensor).to(self.device)
     else:
       # fraction of samples with i'th spin on (HINTON section 8)
-      vp = 1. * torch.sum(data, dim=1, keepdim=True) / self.m
-      self.a, self.b = torch.log(vp / (1. - vp)), torch.ones(self.n_h, 1)
+      vp = 1. * torch.sum(data_t, dim=1, keepdim=True) / self.m
+      self.a = torch.log(vp / (1. - vp))
+      self.b = torch.ones(self.n_h, 1).type(torch.DoubleTensor).to(self.device)
 
     # initialize weights to gaussian small values (HINTON)
     # TODO
@@ -67,7 +68,7 @@ class RBM:
     self.w_ij = torch.from_numpy(self.w_ij).to(self.device)
 
     # Placeholder for momentum
-    v = torch.zeros(self.w_ij.shape)
+    v = torch.zeros(self.w_ij.shape).type(torch.DoubleTensor).to(self.device)
 
     # For all w_ijs, as, and bs in run
     w_ijs, aa, bb = [], [], []
@@ -78,29 +79,27 @@ class RBM:
       dataThisEpoch = dataThisEpoch[:, torch.randperm(self.m)]
 
       # make batches for this epoch
-      batches = torch.split(dataThisEpoch, batchesInSample, dim=1)
+      batches = torch.chunk(dataThisEpoch, batchesInSample, dim=1)
 
       for batch in batches:
         # probability that hidden unit is 1
         # Gives (n_h x bs) matrix
-        pHidData = self._logistic(torch.dot(self.w_ij.transpose(0, 1),
-                                            batch) + self.b)
+        pHidData = self._logistic(torch.mm(self.w_ij.t(), batch) + self.b)
+        # pHidData = self._logistic(torch.dot(torch.t(self.w_ij), batch) + self.b)
 
         # random_probabilities = torch.rand_like(pHidData).to(self.device)
         # sampHidData = (pHidData >= random_probabilities).float()
         sampHidData = Bernoulli(pHidData).sample().to(self.device)
 
         # reconstructed visible pdf from the hidden data sample
-        pVisRecon = self._logistic(torch.dot(self.w_ij, sampHidData) + self.a)
+        pVisRecon = self._logistic(torch.mm(self.w_ij, sampHidData) + self.a)
 
         # reconstructed hidden pdf
-        pHidRecon = self._logistic(torch.dot(self.w_ij.T, pVisRecon) + self.b)
+        pHidRecon = self._logistic(torch.mm(self.w_ij.t(), pVisRecon) + self.b)
 
         # <v h> correlations for data and reconstructed
-        visHidCorrData = \
-          torch.dot(batch, pHidData.transpose(0, 1)) / self.bs
-        visHidCorrRecon = \
-          torch.dot(pVisRecon, pHidRecon.transpose(0, 1)) / self.bs
+        visHidCorrData = torch.mm(batch, pHidData.t()) / self.bs
+        visHidCorrRecon = torch.mm(pVisRecon, pHidRecon.t()) / self.bs
 
         # gradient ascent on parameters, with opt L1 regularization
         # TODO check minus sign
@@ -109,10 +108,10 @@ class RBM:
 
         self.w_ij += v
         if biasesTo0 is False:
-          self.a += (trainRate / self.bs) * \
-                    torch.sum(batch - pVisRecon, dim=1, keepdims=True)
-          self.b += (trainRate / self.bs) * \
-                    torch.sum(pHidData - pHidRecon, dim=1, keepdims=True)
+          self.a += (trainRate / self.bs) * torch.sum(batch - pVisRecon,
+                                                      dim=1, keepdim=True)
+          self.b += (trainRate / self.bs) * torch.sum(pHidData - pHidRecon,
+                                                      dim=1, keepdim=True)
 
       # log weights during training if 'allParams' is set
       if allParams == True and i % log_interval == 0:
@@ -126,7 +125,7 @@ class RBM:
     bb.append(self.b)
 
     self.trained = True
-    return w_ijs, aa, bb
+    return w_ijs.cpu().numpy(), aa.cpu().numpy(), bb.cpu().numpy()
 
 
   def _logistic(self, x):

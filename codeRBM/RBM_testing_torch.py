@@ -1,6 +1,7 @@
 # %% code based on http://www.cs.toronto.edu/~hinton/MatlabForSciencePaper.html
 
 # imports and setup
+import os
 import numpy as np
 import torch
 import matplotlib.pyplot as plt
@@ -19,7 +20,7 @@ dataOrig = np.load(
 
 os.chdir("/home/fineline/projects/MEHTA_project/codeRBM")
 
-numSamp, batchSize, = dataOrig.shape[0], 100
+numSamp, batchSize = dataOrig.shape[0], 100
 n_v, n_h = dataOrig.shape[1] * dataOrig.shape[2], 400
 
 data = np.reshape(dataOrig, (numSamp, n_v)).T
@@ -36,8 +37,6 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print("Layer 1/3")
 rbm1st = RBM(n_v, n_h, numSamp, batchSize)
 numEpochs, learnRate, regWeight, mom, logInt = 50, 0.1, 0.008, 0.5, 1
-
-
 
 ## REALLY SLOW. Load data below instead
 # train for ___ epochs, with learning rate 0.1

@@ -133,10 +133,10 @@ class RBM:
                                         l1RegWeight * np.sign(self.w_ij))
         self.w_ij += v
         if biasesTo0 is False:
-          self.a += (trainRate / self.bs) * \
-                    np.sum(batch - pVisRecon, axis=1, keepdims=True)
-          self.b += (trainRate / self.bs) * \
-                    np.sum(pHidData - pHidRecon, axis=1, keepdims=True)
+          self.a += (trainRate / self.bs) * np.sum(batch - pVisRecon,
+                                                   axis=1, keepdims=True)
+          self.b += (trainRate / self.bs) * np.sum(pHidData - pHidRecon,
+                                                   axis=1, keepdims=True)
 
       # log weights during training if 'allParams' is set
       if allParams == True and i % log_interval == 0:
