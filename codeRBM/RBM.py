@@ -4,7 +4,7 @@
 # HINTON - "2010 - Hinton - A Practical Guide to Training RBMs"
 
 import numpy as np
-from tqdm import tqdm # progress monitor
+from tqdm import tqdm
 
 # RBM class
 #
@@ -93,12 +93,9 @@ class RBM:
 
     # For all w_ijs, as, and bs in run
     w_ijs, aa, bb = [], [], []
-    # w_ijs, aa, bb = np.array([self.w_ij]), np.array([self.a]), \
-    #                 np.array([self.b])
 
-    # This is the train routine. At the end of this loop, we should have an
-    #  [array if allParams set] of w_ij matrices -- one for every gradient
-    #  ascent step.
+    # This is the train routine. At the end of this loop, we should have an list
+    # of w_ij matrices -- one for every gradient ascent step.
     for i in tqdm(range(numEpochs)):
       # randomize sample order for this epoch
       dataThisEpoch = np.copy(data)
@@ -145,18 +142,10 @@ class RBM:
         aa.append(self.a)
         bb.append(self.b)
 
-        # w_ijs = np.vstack([w_ijs, [self.w_ij]])
-        # aa = np.vstack([aa, [self.a]])
-        # bb = np.vstack([bb, [self.b]])
-
     # final result
     w_ijs.append(self.w_ij)
     aa.append(self.a)
     bb.append(self.b)
-
-    # w_ijs = np.vstack([w_ijs, [self.w_ij]])
-    # aa = np.vstack([aa, [self.a]])
-    # bb = np.vstack([bb, [self.b]])
 
     self.trained = True
     return w_ijs, aa, bb

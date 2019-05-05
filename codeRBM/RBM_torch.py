@@ -1,8 +1,7 @@
 # RBM implementation in pytorch
-# TODO: put in '.to(device)' on all relevant variables
 
 import numpy as np
-from tqdm import tqdm # progress monitor
+from tqdm import tqdm
 import torch
 import torch.nn as nn
 from torch.distributions.bernoulli import Bernoulli
@@ -62,7 +61,6 @@ class RBM:
       self.b = torch.ones(self.n_h, 1).type(torch.DoubleTensor).to(self.device)
 
     # initialize weights to gaussian small values (HINTON)
-    # TODO
     np_rng = np.random.RandomState(1234)
     self.w_ij = np_rng.normal(0, 0.01, size=(self.n_v, self.n_h))
     self.w_ij = torch.from_numpy(self.w_ij).to(self.device)
@@ -85,7 +83,6 @@ class RBM:
         # probability that hidden unit is 1
         # Gives (n_h x bs) matrix
         pHidData = self._logistic(torch.mm(self.w_ij.t(), batch) + self.b)
-        # pHidData = self._logistic(torch.dot(torch.t(self.w_ij), batch) + self.b)
 
         # random_probabilities = torch.rand_like(pHidData).to(self.device)
         # sampHidData = (pHidData >= random_probabilities).float()
