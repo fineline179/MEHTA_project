@@ -47,9 +47,9 @@ numEpochs, learnRate, regWeight, mom, logInt = 50, 0.1, 0.008, 0.5, 1
 #                                       log_interval=logInt)
 # np.savez_compressed("data/couplingsL1.npz", W_ijs1st, aa1st, bb1st)
 
-W_ijs1st = np.load("data/couplingsL1.npz")['arr_0']
-aa1st = np.load("data/couplingsL1.npz")['arr_1']
-bb1st = np.load("data/couplingsL1.npz")['arr_2']
+W_ijs1st = np.squeeze(np.load("data/couplingsL1.npz")['arr_0'], axis=0)
+aa1st    = np.squeeze(np.load("data/couplingsL1.npz")['arr_1'], axis=0)
+bb1st    = np.squeeze(np.load("data/couplingsL1.npz")['arr_2'], axis=0)
 rbm1st.setParams(W_ijs1st, aa1st, bb1st)
 
 if PLOT_BIASES:
@@ -90,9 +90,9 @@ numEpochs, learnRate, regWeight, mom, logInt = 100, 0.1, 0.008, 0.5, 1
 #                                       False, regWeight, mom, logInt)
 # np.savez_compressed("data/couplingsL2.npz", W_ijs2nd, aa2nd, bb2nd)
 
-W_ijs2nd = np.load("data/couplingsL2.npz")['arr_0']
-aa2nd = np.load("data/couplingsL2.npz")['arr_1']
-bb2nd = np.load("data/couplingsL2.npz")['arr_2']
+W_ijs2nd = np.squeeze(np.load("data/couplingsL2.npz")['arr_0'], axis=0)
+aa2nd    = np.squeeze(np.load("data/couplingsL2.npz")['arr_1'], axis=0)
+bb2nd    = np.squeeze(np.load("data/couplingsL2.npz")['arr_2'], axis=0)
 rbm2nd.setParams(W_ijs2nd, aa2nd, bb2nd)
 
 if PLOT_BIASES:
@@ -146,10 +146,10 @@ W_ijs3rd, aa3rd, bb3rd = rbm3rd.train(data3rd, numEpochs, learnRate, True,
                                       False, regWeight, mom, logInt)
 np.savez_compressed("data/couplingsL3.npz", W_ijs3rd, aa3rd, bb3rd)
 
-# W_ijs3rd = np.load("data/couplingsL3.npz")['arr_0']
-# aa3rd    = np.load("data/couplingsL3.npz")['arr_1']
-# bb3rd    = np.load("data/couplingsL3.npz")['arr_2']
-# rbm3rd.setParams(W_ijs3rd, aa3rd, bb3rd)
+W_ijs3rd = np.squeeze(np.load("data/couplingsL3.npz")['arr_0'], axis=0)
+aa3rd    = np.squeeze(np.load("data/couplingsL3.npz")['arr_1'], axis=0)
+bb3rd    = np.squeeze(np.load("data/couplingsL3.npz")['arr_2'], axis=0)
+rbm3rd.setParams(W_ijs3rd, aa3rd, bb3rd)
 
 if PLOT_BIASES:
     # Vis unit biases (a)
