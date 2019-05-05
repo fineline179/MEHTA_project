@@ -1,0 +1,11 @@
+*.so
+*.pyc
+
+.idea/
+codeAETune/
+ltximg/
+media/
+papers/
+images/
+.ipynb_checkpoints/
+build/
