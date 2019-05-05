@@ -136,14 +136,15 @@ class RBM:
     assert (vis.shape[0] == self.n_v)
 
     # Calculate final hidden activations from final model
-    return self._logistic(np.dot(self.w_ij.T, vis) + self.b)
+    return self._logistic(np.dot(self.w_ij.cpu().numpy().T, vis) +
+                          self.b.cpu().numpy())
 
   def hTov(self, hid):
     assert (self.trained == True)
     assert (hid.shape[0] == self.n_h)
 
     # Figure out what biases to put in here (compare vToH function, above)
-    return self._logistic(np.dot(self.w_ij, hid))
+    return self._logistic(np.dot(self.w_ij.cpu().numpy(), hid))
 
 
 
