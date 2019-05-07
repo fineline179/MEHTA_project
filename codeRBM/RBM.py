@@ -38,6 +38,13 @@ from tqdm import tqdm
 
 class RBM:
   def __init__(self, numVis, numHid, numTrain, bs):
+    '''
+    Args:
+      numVis: number of visible units
+      numHid: number of hidden units
+      numTrain: number of training examples
+      bs: minibatch size
+    '''
     self.n_v = numVis
     self.n_h = numHid
     self.m = numTrain
@@ -45,29 +52,38 @@ class RBM:
     self.trained = False
 
   def setParams(self, W, a, b):
-    ''' Sets RBM parameters.
-          Inputs: "W" - (n_v x n_h) matrix of trained couplings
-                  "a" - (n_v x 1) vector of trained visible biases
-                  "b" - (n_h x 1) vector of trained hidden biases
+    '''
+    Sets RBM parameters
+
+    Args:
+      W: (n_v x n_h) ndarray of trained couplings
+      a: (n_v x 1) ndarray of trained visible biases
+      b: (n_h x 1) ndarray of trained hidden biases
+
+    Returns:
     '''
     self.w_ij, self.a, self.b = W, a, b
     self.trained = True
 
   def train(self, data, numEpochs, trainRate, biasesTo0=False, allParams=False,
             l1RegWeight=0, momentum=0, log_interval=10):
-    ''' Trains the RBM.
-          Inputs:  "data"         - (n_v x m) array of inputs
-                   "numEpochs"    - number of epochs to train for
-                   "trainRate"    - training rate
-                   "biasesTo0"    - if true, biases are left out of calculation
-                   "allParams"    - if true, log a, b, and wij every
-                                    "log_interval"
-                   "l1RegWeight"  - strength of L1 regularization (no reg if 0)
-                   "momentum"     - strength of momentum (no mom if 0)
-                   "log_interval" - log progress every this number of epochs
-          Returns: "w_ij" - (n_v x n_h) matrix of trained couplings
-                   "a"    - (n_v x 1) vector of trained visible biases
-                   "b"    - (n_h x 1) vector of trained hidden biases
+    '''
+    Trains the RBM
+
+    Args:
+      data: (n_v x m) ndarray of inputs
+      numEpochs: number of epochs to train for
+      trainRate: training rate
+      biasesTo0: if true, biases are left out of calculation
+      allParams: if true, log a, b, and wij every "log_interval"
+      l1RegWeight: strength of L1 regularization (no reg if 0)
+      momentum: strength of momentum (no mom if 0)
+      log_interval: log progress every this number of epochs
+
+    Returns:
+      w_ijs: list of (n_v x n_h) ndarrays of trained couplings
+      aa: list of(n_v x 1) ndarrays of trained visible biases
+      bb: list of (n_h x 1) ndarrays of trained hidden biases
     '''
     # make sure data is of specified shape
     assert (data.shape[0] == self.n_v)
