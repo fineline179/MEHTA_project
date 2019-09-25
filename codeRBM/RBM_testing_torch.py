@@ -13,13 +13,13 @@ plt.style.use('dark_background')
 
 # plot flags
 PLOT_BIASES = False
-PLOT_WEIGHTS = False
-PLOT_RECON = False
+PLOT_WEIGHTS = True
+PLOT_RECON = True
 
 # load Ising model samples
 dataOrig = np.load(
-    "/home/fineline/projects/MEHTA_project/data"
-    "/outputTest30000updates20000samples.npz")['arr_0']
+  "/home/fineline/projects/MEHTA_project/data"
+  "/outputTest30000updates20000samples.npz")['arr_0']
 
 os.chdir("/home/fineline/projects/MEHTA_project/codeRBM")
 
@@ -44,13 +44,13 @@ numEpochs, learnRate, regWeight, mom, logInt = 200, 0.1, 0.008, 0.5, 1
 
 ## REALLY SLOW. Load data below instead
 # train for ___ epochs, with learning rate 0.1
-W_ijs1st, aa1st, bb1st = rbm1st.train(data1st, numEpochs, learnRate,
-                                      biasesTo0=True,
-                                      allParams=False,
-                                      l1RegWeight=regWeight,
-                                      momentum=mom,
-                                      log_interval=logInt)
-np.savez_compressed("data/torch/couplingsL1.npz", W_ijs1st, aa1st, bb1st)
+# W_ijs1st, aa1st, bb1st = rbm1st.train(data1st, numEpochs, learnRate,
+#                                       biasesTo0=True,
+#                                       allParams=False,
+#                                       l1RegWeight=regWeight,
+#                                       momentum=mom,
+#                                       log_interval=logInt)
+# np.savez_compressed("data/torch/couplingsL1.npz", W_ijs1st, aa1st, bb1st)
 
 W_ijs1st = np.squeeze(np.load("data/torch/couplingsL1.npz")['arr_0'], axis=0)
 aa1st    = np.squeeze(np.load("data/torch/couplingsL1.npz")['arr_1'], axis=0)
@@ -58,25 +58,25 @@ bb1st    = np.squeeze(np.load("data/torch/couplingsL1.npz")['arr_2'], axis=0)
 rbm1st.setParams(W_ijs1st, aa1st, bb1st)
 
 if PLOT_BIASES:
-    # Vis unit biases (a)
-    plt.rcParams['figure.figsize'] = (20.0, 20.0)
-    plt.imshow(aa1st.reshape(40, 40))
-    plt.show()
+  # Vis unit biases (a)
+  plt.rcParams['figure.figsize'] = (20.0, 20.0)
+  plt.imshow(aa1st.reshape(40, 40))
+  plt.show()
 
-    # Hid unit biases (b)
-    plt.rcParams['figure.figsize'] = (15.0, 10.0)
-    plt.imshow(bb1st.reshape(20, 20))
-    plt.show()
+  # Hid unit biases (b)
+  plt.rcParams['figure.figsize'] = (15.0, 10.0)
+  plt.imshow(bb1st.reshape(20, 20))
+  plt.show()
 
 # Plot wijs
 wijs1st = W_ijs1st.T
 if PLOT_WEIGHTS:
-    plt.rcParams['figure.figsize'] = (20.0, 20.0)
-    print("wijs1st shape =", wijs1st.shape)
-    for i in range(100):
-        plt.subplot(10, 10, i + 1)
-        plt.imshow(wijs1st[i].reshape(40, 40))
-    plt.show()
+  plt.rcParams['figure.figsize'] = (20.0, 20.0)
+  print("wijs1st shape =", wijs1st.shape)
+  for i in range(100):
+    plt.subplot(10, 10, i + 1)
+    plt.imshow(wijs1st[i].reshape(40, 40))
+  plt.show()
 
 # %%############################################################################
 # SECOND LAYER RBM
@@ -91,9 +91,9 @@ numEpochs, learnRate, regWeight, mom, logInt = 400, 0.1, 0.008, 0.5, 1
 
 ## PRETTY SLOW. Load data below instead
 # train for ___ epochs, with learning rate 0.1
-W_ijs2nd, aa2nd, bb2nd = rbm2nd.train(data2nd, numEpochs, learnRate, True,
-                                      False, regWeight, mom, logInt)
-np.savez_compressed("data/torch/couplingsL2.npz", W_ijs2nd, aa2nd, bb2nd)
+# W_ijs2nd, aa2nd, bb2nd = rbm2nd.train(data2nd, numEpochs, learnRate, True,
+#                                       False, regWeight, mom, logInt)
+# np.savez_compressed("data/torch/couplingsL2.npz", W_ijs2nd, aa2nd, bb2nd)
 
 W_ijs2nd = np.squeeze(np.load("data/torch/couplingsL2.npz")['arr_0'], axis=0)
 aa2nd    = np.squeeze(np.load("data/torch/couplingsL2.npz")['arr_1'], axis=0)
@@ -101,36 +101,36 @@ bb2nd    = np.squeeze(np.load("data/torch/couplingsL2.npz")['arr_2'], axis=0)
 rbm2nd.setParams(W_ijs2nd, aa2nd, bb2nd)
 
 if PLOT_BIASES:
-    # Vis unit biases (a)
-    plt.rcParams['figure.figsize'] = (20.0, 20.0)
-    plt.imshow(aa2nd.reshape(20, 20))
-    plt.show()
+  # Vis unit biases (a)
+  plt.rcParams['figure.figsize'] = (20.0, 20.0)
+  plt.imshow(aa2nd.reshape(20, 20))
+  plt.show()
 
-    # Hid unit biases (b)
-    plt.rcParams['figure.figsize'] = (10.0, 5.0)
-    plt.imshow(bb2nd.reshape(10, 10))
-    plt.show()
+  # Hid unit biases (b)
+  plt.rcParams['figure.figsize'] = (10.0, 5.0)
+  plt.imshow(bb2nd.reshape(10, 10))
+  plt.show()
 
 # %%
 wijs2nd = W_ijs2nd.T
 if PLOT_WEIGHTS:
-    plt.rcParams['figure.figsize'] = (15.0, 20.0)
-    print("wijs2nd shape =", wijs2nd.shape)
-    for i in range(20):
-        plt.subplot(10, 10, i + 1)
-        plt.imshow(wijs2nd[i].reshape(20, 20))
-    plt.show()
+  plt.rcParams['figure.figsize'] = (15.0, 20.0)
+  print("wijs2nd shape =", wijs2nd.shape)
+  for i in range(20):
+    plt.subplot(10, 10, i + 1)
+    plt.imshow(wijs2nd[i].reshape(20, 20))
+  plt.show()
 
 # %%
 # reconstruction of full receptor fields
 recept2nd = [(1 / 4e2) * np.dot(wijs2nd[i, :], wijs1st) for i in range(n_h2)]
 
 if PLOT_RECON:
-    plt.rcParams['figure.figsize'] = (15.0, 20.0)
-    for i in range(50):
-        plt.subplot(10, 5, i + 1)
-        plt.imshow(recept2nd[i].reshape(40, 40))
-    plt.show()
+  plt.rcParams['figure.figsize'] = (15.0, 20.0)
+  for i in range(50):
+    plt.subplot(10, 5, i + 1)
+    plt.imshow(recept2nd[i].reshape(40, 40))
+  plt.show()
 
 # %%############################################################################
 # THIRD LAYER RBM
@@ -157,35 +157,35 @@ bb3rd    = np.squeeze(np.load("data/torch/couplingsL3.npz")['arr_2'], axis=0)
 rbm3rd.setParams(W_ijs3rd, aa3rd, bb3rd)
 
 if PLOT_BIASES:
-    # Vis unit biases (a)
-    plt.rcParams['figure.figsize'] = (20.0, 20.0)
-    plt.imshow(aa3rd.reshape(10, 10))
-    plt.show()
+  # Vis unit biases (a)
+  plt.rcParams['figure.figsize'] = (20.0, 20.0)
+  plt.imshow(aa3rd.reshape(10, 10))
+  plt.show()
 
-    # Hid unit biases (b)
-    plt.rcParams['figure.figsize'] = (10.0, 5.0)
-    plt.imshow(bb3rd.reshape(5, 5))
-    plt.show()
+  # Hid unit biases (b)
+  plt.rcParams['figure.figsize'] = (10.0, 5.0)
+  plt.imshow(bb3rd.reshape(5, 5))
+  plt.show()
 
 wijs3rd = W_ijs3rd.T
 if PLOT_WEIGHTS:
-    plt.rcParams['figure.figsize'] = (15.0, 20.0)
-    print("wijs3rd shape=", wijs3rd.shape)
-    for i in range(25):
-        plt.subplot(10, 10, i + 1)
-        plt.imshow(wijs3rd[i].reshape(10, 10))
-    plt.show()
+  plt.rcParams['figure.figsize'] = (15.0, 20.0)
+  print("wijs3rd shape=", wijs3rd.shape)
+  for i in range(25):
+    plt.subplot(10, 10, i + 1)
+    plt.imshow(wijs3rd[i].reshape(10, 10))
+  plt.show()
 
 # reconstruction of full receptor fields
 recept3rd = [(1 / 4e4) * np.dot(np.dot(wijs3rd[i, :], wijs2nd), wijs1st) for i
              in range(n_h3)]
 
 if PLOT_RECON:
-    plt.rcParams['figure.figsize'] = (15.0, 8.0)
-    for i in range(25):
-        plt.subplot(3, 10, i + 1)
-        plt.imshow(recept3rd[i].reshape(40, 40))
-    plt.show()
+  plt.rcParams['figure.figsize'] = (15.0, 8.0)
+  for i in range(25):
+    plt.subplot(3, 10, i + 1)
+    plt.imshow(recept3rd[i].reshape(40, 40))
+  plt.show()
 
 # %%############################################################################
 # RECONSTRUCT DATA (improperly)
@@ -206,25 +206,25 @@ hidL3 = rbm3rd.vToh(hidL2)
 # dataReconTWO and dataReconTHREE gives the higher freq components
 dataReconONE = np.dot(wijs1st.T,
                       np.dot(wijs2nd.T, wijs3rd.T.dot(hidL3))).reshape(
-    (40, 40, 5))
-dataReconTWO = np.dot(wijs1st.T, wijs2nd.T.dot(hidL2)).reshape((40, 40, 5))
+  (40, 40, 5))
+dataReconTWO = wijs1st.T.dot(wijs2nd.T.dot(hidL2)).reshape((40, 40, 5))
 dataReconTHREE = wijs1st.T.dot(hidL1).reshape((40, 40, 5))
 
 # Not sure about the numerical weighting factors here...
 dataRecon = dataReconONE + 100 * dataReconTWO + 400 * 100 * dataReconTHREE
 
 if PLOT_RECON:
-    for i in range(recon_num):
-        # reconstructed samples
-        plt.subplot(3, recon_num, i + 1)
-        plt.imshow(dataRecon[:, :, i])
-        # reconstructed samples binarized
-        plt.subplot(3, recon_num, i + 1 + recon_num)
-        plt.imshow(dataRecon[:, :, i] > 0)
-        # original samples
-        plt.subplot(3, recon_num, i + 1 + 2 * recon_num)
-        plt.imshow(dataL[:, i].reshape(40, 40))
-    plt.show()
+  for i in range(recon_num):
+    # reconstructed samples
+    plt.subplot(3, recon_num, i + 1)
+    plt.imshow(dataRecon[:, :, i])
+    # reconstructed samples binarized
+    plt.subplot(3, recon_num, i + 1 + recon_num)
+    plt.imshow(dataRecon[:, :, i] > 0)
+    # original samples
+    plt.subplot(3, recon_num, i + 1 + 2 * recon_num)
+    plt.imshow(dataL[:, i].reshape(40, 40))
+  plt.show()
 
 # %%############################################################################
 # RECONSTRUCT ALL DATA POINTS
@@ -241,15 +241,15 @@ hidL1_back = rbm2nd.hTov(hidL2_back)
 dataL_back = rbm1st.hTov(hidL1_back)
 
 if PLOT_RECON:
-    for i in range(recon_num):
-        # reconstructed samples
-        dataL_backRes = dataL_back[:, i].reshape(40, 40)
-        plt.subplot(3, recon_num, i + 1)
-        plt.imshow(dataL_backRes)
-        # reconstructed samples binarized
-        plt.subplot(3, recon_num, i + 1 + recon_num)
-        plt.imshow(dataL_backRes > 0.5)
-        # original samples
-        plt.subplot(3, recon_num, i + 1 + 2 * recon_num)
-        plt.imshow(dataL[:, i].reshape(40, 40))
-    plt.show()
+  for i in range(recon_num):
+    # reconstructed samples
+    dataL_backRes = dataL_back[:, i].reshape(40, 40)
+    plt.subplot(3, recon_num, i + 1)
+    plt.imshow(dataL_backRes)
+    # reconstructed samples binarized
+    plt.subplot(3, recon_num, i + 1 + recon_num)
+    plt.imshow(dataL_backRes > 0.5)
+    # original samples
+    plt.subplot(3, recon_num, i + 1 + 2 * recon_num)
+    plt.imshow(dataL[:, i].reshape(40, 40))
+  plt.show()

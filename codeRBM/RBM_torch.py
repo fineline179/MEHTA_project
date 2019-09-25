@@ -38,8 +38,15 @@ class RBM:
     self.b = torch.from_numpy(b).to(self.device)
     self.trained = True
 
-  def train(self, data, numEpochs, trainRate, biasesTo0=False, allParams=False,
-            l1RegWeight=0, momentum=0, log_interval=10):
+  def train(self,
+            data,
+            numEpochs,
+            trainRate,
+            biasesTo0=False,
+            allParams=False,
+            l1RegWeight=0,
+            momentum=0,
+            log_interval=10):
     '''
     Trains the RBM
 
@@ -121,10 +128,10 @@ class RBM:
 
         self.w_ij += v
         if biasesTo0 is False:
-          self.a += (trainRate / self.bs) * torch.sum(batch - pVisRecon,
-                                                      dim=1, keepdim=True)
-          self.b += (trainRate / self.bs) * torch.sum(pHidData - pHidRecon,
-                                                      dim=1, keepdim=True)
+          self.a += (trainRate / self.bs) * torch.sum(
+            batch - pVisRecon, dim=1, keepdim=True)
+          self.b += (trainRate / self.bs) * torch.sum(
+            pHidData - pHidRecon, dim=1, keepdim=True)
 
       # log weights during training if 'allParams' is set
       if allParams == True and i % log_interval == 0:
@@ -140,7 +147,6 @@ class RBM:
     self.trained = True
     return w_ijs, aa, bb
 
-
   def _logistic(self, x):
     return 1.0 / (1 + torch.exp(-x))
 
@@ -152,8 +158,8 @@ class RBM:
     assert (vis.shape[0] == self.n_v)
 
     # Calculate final hidden activations from final model
-    return self._logisticnp(np.dot(self.w_ij.cpu().numpy().T, vis) +
-                            self.b.cpu().numpy())
+    return self._logisticnp(
+      np.dot(self.w_ij.cpu().numpy().T, vis,) + self.b.cpu().numpy())
 
   def hTov(self, hid):
     assert (self.trained == True)
@@ -161,14 +167,3 @@ class RBM:
 
     # Figure out what biases to put in here (compare vToH function, above)
     return self._logisticnp(np.dot(self.w_ij.cpu().numpy(), hid))
-
-
-
-
-
-
-
-
-
-
-
