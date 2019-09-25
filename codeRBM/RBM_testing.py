@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-# %% code based on http://www.cs.toronto.edu/~hinton/MatlabForSciencePaper.html
+# code based on http://www.cs.toronto.edu/~hinton/MatlabForSciencePaper.html
 
-# imports and setup
+# %% imports and setup
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,7 +11,7 @@ plt.rcParams['figure.figsize'] = (15.0, 20.0)
 plt.style.use('dark_background')
 
 # plot flags
-PLOT_BIASES = False
+PLOT_BIASES = True
 PLOT_WEIGHTS = True
 PLOT_RECON = True
 
@@ -30,6 +30,7 @@ data = np.reshape(dataOrig, (numSamp, n_v)).T
 data1st = np.copy(data)
 print("data1st shape =", str(data1st.shape))
 
+print()
 # %%############################################################################
 # FIRST LAYER RBM
 ################################################################################
@@ -39,13 +40,13 @@ numEpochs, learnRate, regWeight, mom, logInt = 50, 0.1, 0.008, 0.5, 1
 
 ## REALLY SLOW. Load data below instead
 # train for ___ epochs, with learning rate 0.1
-W_ijs1st, aa1st, bb1st = rbm1st.train(data1st, numEpochs, learnRate,
-                                      biasesTo0=True,
-                                      allParams=False,
-                                      l1RegWeight=regWeight,
-                                      momentum=mom,
-                                      log_interval=logInt)
-np.savez_compressed("data/couplingsL1.npz", W_ijs1st, aa1st, bb1st)
+# W_ijs1st, aa1st, bb1st = rbm1st.train(data1st, numEpochs, learnRate,
+#                                       biasesTo0=True,
+#                                       allParams=False,
+#                                       l1RegWeight=regWeight,
+#                                       momentum=mom,
+#                                       log_interval=logInt)
+# np.savez_compressed("data/couplingsL1.npz", W_ijs1st, aa1st, bb1st)
 
 W_ijs1st = np.squeeze(np.load("data/couplingsL1.npz")['arr_0'], axis=0)
 aa1st    = np.squeeze(np.load("data/couplingsL1.npz")['arr_1'], axis=0)
@@ -221,7 +222,7 @@ if PLOT_RECON:
     plt.show()
 
 # %%############################################################################
-# RECONSTRUCT ALL DATA POINTS
+# RECONSTRUCT DATA (properly)
 ################################################################################
 
 recon_num = 5
