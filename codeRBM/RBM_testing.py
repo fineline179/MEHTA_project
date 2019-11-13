@@ -248,3 +248,17 @@ if PLOT_RECON:
         plt.subplot(3, recon_num, i + 1 + 2 * recon_num)
         plt.imshow(dataL[:, i].reshape(40, 40))
     plt.show()
+
+# %%############################################################################
+# TODO: Implement below
+################################################################################
+
+plt.rcParams['figure.figsize'] = (29.0, 20.0.reshape(40, 40))
+plt.subplot(1, 2, 1)
+plt.imshow(data)
+
+dataCop2=np.zeros(data.shape)
+np.copyto(dataCop2, data)
+hidActs = rbm.vToh(dataCop2)
+plt.subplot(1, 2, 2)
+plt.imshow(hidActs)
