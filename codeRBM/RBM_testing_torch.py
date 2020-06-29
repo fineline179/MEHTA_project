@@ -6,7 +6,7 @@ import os
 import numpy as np
 import torch
 import matplotlib.pyplot as plt
-from codeRBM.RBM_torch import RBM
+from RBM_torch import RBM
 
 plt.rcParams['figure.figsize'] = (15.0, 20.0)
 plt.style.use('dark_background')
@@ -39,23 +39,24 @@ print('training on device: {}\n'.format(device))
 # FIRST LAYER RBM
 ################################################################################
 print("Layer 1/3")
-rbm1st = RBM(n_v, n_h, numSamp, batchSize)
+rbm1st = RBM(n_v, n_h, numSamp, batchSize, double_prec=False)
 numEpochs, learnRate, regWeight, mom, logInt = 200, 0.1, 0.008, 0.5, 1
 
 ## REALLY SLOW. Load data below instead
 # train for ___ epochs, with learning rate 0.1
-# W_ijs1st, aa1st, bb1st = rbm1st.train(data1st, numEpochs, learnRate,
-#                                       biasesTo0=True,
-#                                       allParams=False,
-#                                       l1RegWeight=regWeight,
-#                                       momentum=mom,
-#                                       log_interval=logInt)
+W_ijs1st, aa1st, bb1st = rbm1st.train(data1st, numEpochs, learnRate,
+                                      biasesTo0=True,
+                                      allParams=False,
+                                      l1RegWeight=regWeight,
+                                      momentum=mom,
+                                      log_interval=logInt)
+
 # np.savez_compressed("data/torch/couplingsL1.npz", W_ijs1st, aa1st, bb1st)
 
-W_ijs1st = np.squeeze(np.load("data/torch/couplingsL1.npz")['arr_0'], axis=0)
-aa1st    = np.squeeze(np.load("data/torch/couplingsL1.npz")['arr_1'], axis=0)
-bb1st    = np.squeeze(np.load("data/torch/couplingsL1.npz")['arr_2'], axis=0)
-rbm1st.setParams(W_ijs1st, aa1st, bb1st)
+# W_ijs1st = np.squeeze(np.load("data/torch/couplingsL1.npz")['arr_0'], axis=0)
+# aa1st    = np.squeeze(np.load("data/torch/couplingsL1.npz")['arr_1'], axis=0)
+# bb1st    = np.squeeze(np.load("data/torch/couplingsL1.npz")['arr_2'], axis=0)
+# rbm1st.setParams(W_ijs1st, aa1st, bb1st)
 
 if PLOT_BIASES:
   # Vis unit biases (a)
@@ -69,7 +70,8 @@ if PLOT_BIASES:
   plt.show()
 
 # Plot wijs
-wijs1st = W_ijs1st.T
+# wijs1st = W_ijs1st.T
+wijs1st = W_ijs1st[0].T  # use when NOT running, and NOT loading from save
 if PLOT_WEIGHTS:
   plt.rcParams['figure.figsize'] = (20.0, 20.0)
   print("wijs1st shape =", wijs1st.shape)
@@ -86,19 +88,26 @@ print("Layer 2/3")
 data2nd = rbm1st.vToh(data1st)
 # setup 2nd RBM
 numSamp, batchSize, n_v2, n_h2 = dataOrig.shape[0], 1000, 400, 100
-rbm2nd = RBM(n_v2, n_h2, numSamp, batchSize)
+rbm2nd = RBM(n_v2, n_h2, numSamp, batchSize, double_prec=False)
 numEpochs, learnRate, regWeight, mom, logInt = 400, 0.1, 0.008, 0.5, 1
 
 ## PRETTY SLOW. Load data below instead
 # train for ___ epochs, with learning rate 0.1
-# W_ijs2nd, aa2nd, bb2nd = rbm2nd.train(data2nd, numEpochs, learnRate, True,
-#                                       False, regWeight, mom, logInt)
+
+
+W_ijs2nd, aa2nd, bb2nd = rbm2nd.train(data2nd, numEpochs, learnRate,
+                                      biasesTo0 = True,
+                                      allParams = False,
+                                      l1RegWeight = regWeight,
+                                      momentum = mom,
+                                      log_interval = logInt)
+
 # np.savez_compressed("data/torch/couplingsL2.npz", W_ijs2nd, aa2nd, bb2nd)
 
-W_ijs2nd = np.squeeze(np.load("data/torch/couplingsL2.npz")['arr_0'], axis=0)
-aa2nd    = np.squeeze(np.load("data/torch/couplingsL2.npz")['arr_1'], axis=0)
-bb2nd    = np.squeeze(np.load("data/torch/couplingsL2.npz")['arr_2'], axis=0)
-rbm2nd.setParams(W_ijs2nd, aa2nd, bb2nd)
+# W_ijs2nd = np.squeeze(np.load("data/torch/couplingsL2.npz")['arr_0'], axis=0)
+# aa2nd    = np.squeeze(np.load("data/torch/couplingsL2.npz")['arr_1'], axis=0)
+# bb2nd    = np.squeeze(np.load("data/torch/couplingsL2.npz")['arr_2'], axis=0)
+# rbm2nd.setParams(W_ijs2nd, aa2nd, bb2nd)
 
 if PLOT_BIASES:
   # Vis unit biases (a)
@@ -112,7 +121,7 @@ if PLOT_BIASES:
   plt.show()
 
 # %%
-wijs2nd = W_ijs2nd.T
+wijs2nd = W_ijs2nd[0].T
 if PLOT_WEIGHTS:
   plt.rcParams['figure.figsize'] = (15.0, 20.0)
   print("wijs2nd shape =", wijs2nd.shape)
@@ -140,21 +149,26 @@ print("Layer 3/3")
 data3rd = rbm2nd.vToh(data2nd)
 # setup 3nd RBM
 numSamp, batchSize, n_v3, n_h3 = dataOrig.shape[0], 1000, 100, 25
-rbm3rd = RBM(n_v3, n_h3, numSamp, batchSize)
+rbm3rd = RBM(n_v3, n_h3, numSamp, batchSize, double_prec=False)
 # TODO: do an SMO over these parameters
 # numEpochs, learnRate, regWeight, mom, logInt = 100, 0.1, 0.008, 0.6, 1
 numEpochs, learnRate, regWeight, mom, logInt = 400, 0.2, 0.0008, 0.9, 1
 
 ## SLOWISH. Load data below instead
 # train for numEpochs, at learnRate
-W_ijs3rd, aa3rd, bb3rd = rbm3rd.train(data3rd, numEpochs, learnRate, True,
-                                      False, regWeight, mom, logInt)
-np.savez_compressed("data/torch/couplingsL3.npz", W_ijs3rd, aa3rd, bb3rd)
+W_ijs3rd, aa3rd, bb3rd = rbm3rd.train(data3rd, numEpochs, learnRate,
+                                      biasesTo0 = True,
+                                      allParams = False,
+                                      l1RegWeight = regWeight,
+                                      momentum = mom,
+                                      log_interval = logInt)
 
-W_ijs3rd = np.squeeze(np.load("data/torch/couplingsL3.npz")['arr_0'], axis=0)
-aa3rd    = np.squeeze(np.load("data/torch/couplingsL3.npz")['arr_1'], axis=0)
-bb3rd    = np.squeeze(np.load("data/torch/couplingsL3.npz")['arr_2'], axis=0)
-rbm3rd.setParams(W_ijs3rd, aa3rd, bb3rd)
+# np.savez_compressed("data/torch/couplingsL3.npz", W_ijs3rd, aa3rd, bb3rd)
+
+# W_ijs3rd = np.squeeze(np.load("data/torch/couplingsL3.npz")['arr_0'], axis=0)
+# aa3rd    = np.squeeze(np.load("data/torch/couplingsL3.npz")['arr_1'], axis=0)
+# bb3rd    = np.squeeze(np.load("data/torch/couplingsL3.npz")['arr_2'], axis=0)
+# rbm3rd.setParams(W_ijs3rd, aa3rd, bb3rd)
 
 if PLOT_BIASES:
   # Vis unit biases (a)
@@ -167,7 +181,7 @@ if PLOT_BIASES:
   plt.imshow(bb3rd.reshape(5, 5))
   plt.show()
 
-wijs3rd = W_ijs3rd.T
+wijs3rd = W_ijs3rd[0].T
 if PLOT_WEIGHTS:
   plt.rcParams['figure.figsize'] = (15.0, 20.0)
   print("wijs3rd shape=", wijs3rd.shape)

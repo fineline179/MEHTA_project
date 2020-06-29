@@ -7,13 +7,16 @@ import torch.nn as nn
 from torch.distributions.bernoulli import Bernoulli
 
 class RBM:
-  def __init__(self, numVis, numHid, numTrain, bs):
+  def __init__(self, numVis, numHid, numTrain, bs, double_prec=False):
     '''
     Args:
       numVis: number of visible units
       numHid: number of hidden units
       numTrain: number of training examples
       bs: minibatch size
+      double_prec: if True, train with double precision Tensor (eg on Titan V,
+                   but not on 1080 Ti)
+
     '''
     self.n_v = numVis
     self.n_h = numHid
@@ -21,6 +24,10 @@ class RBM:
     self.bs = bs
     self.trained = False
     self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    self.use_double_prec = double_prec
+    self.prec_type = torch.float
+    if double_prec:
+      self.prec_type = torch.float64
 
   def setParams(self, W, a, b):
     '''
@@ -67,7 +74,11 @@ class RBM:
     '''
     # make sure data is of specified shape
     assert (data.shape[0] == self.n_v)
-    data_t = torch.from_numpy(data).to(self.device)
+    # TODO: remove this if/else, and use self.prec_type instead.
+    if self.use_double_prec:
+      data_t = torch.from_numpy(data).to(self.device)
+    else:
+      data_t = torch.from_numpy(data).float().to(self.device)
     # number of samples must be integer multiple of bs
     assert (np.mod(data.shape[1], self.bs) == 0)
 
@@ -75,21 +86,28 @@ class RBM:
 
     # Init biases
     if biasesTo0 is True:
-      self.a = torch.zeros(self.n_v, 1).type(torch.DoubleTensor).to(self.device)
-      self.b = torch.zeros(self.n_h, 1).type(torch.DoubleTensor).to(self.device)
+      # TODO: remove next two lines once working
+      # DOUBLE VERSION
+      # self.a = torch.zeros(self.n_v, 1).type(torch.DoubleTensor).to(self.device)
+      self.a = torch.zeros(self.n_v, 1, dtype=self.prec_type).to(self.device)
+      self.b = torch.zeros(self.n_h, 1, dtype=self.prec_type).to(self.device)
     else:
       # fraction of samples with i'th spin on (HINTON section 8)
       vp = 1. * torch.sum(data_t, dim=1, keepdim=True) / self.m
       self.a = torch.log(vp / (1. - vp))
-      self.b = torch.ones(self.n_h, 1).type(torch.DoubleTensor).to(self.device)
+      self.b = torch.ones(self.n_h, 1, dtype=self.prec_type).to(self.device)
 
     # initialize weights to gaussian small values (HINTON)
     np_rng = np.random.RandomState(1234)
     self.w_ij = np_rng.normal(0, 0.01, size=(self.n_v, self.n_h))
-    self.w_ij = torch.from_numpy(self.w_ij).to(self.device)
+    # TODO: remove this if/else, and use self.prec_type instead.
+    if self.use_double_prec:
+      self.w_ij = torch.from_numpy(self.w_ij).to(self.device)
+    else:
+      self.w_ij = torch.from_numpy(self.w_ij).float().to(self.device)
 
     # Placeholder for momentum
-    v = torch.zeros(self.w_ij.shape).type(torch.DoubleTensor).to(self.device)
+    v = torch.zeros(self.w_ij.shape, dtype=self.prec_type).to(self.device)
 
     # For all w_ijs, as, and bs in run
     w_ijs, aa, bb = [], [], []
@@ -128,10 +146,10 @@ class RBM:
 
         self.w_ij += v
         if biasesTo0 is False:
-          self.a += (trainRate / self.bs) * torch.sum(
-            batch - pVisRecon, dim=1, keepdim=True)
-          self.b += (trainRate / self.bs) * torch.sum(
-            pHidData - pHidRecon, dim=1, keepdim=True)
+          self.a += (trainRate / self.bs) * torch.sum(batch - pVisRecon, dim=1,
+                                                      keepdim=True)
+          self.b += (trainRate / self.bs) * torch.sum(pHidData - pHidRecon, dim=1,
+                                                      keepdim=True)
 
       # log weights during training if 'allParams' is set
       if allParams == True and i % log_interval == 0:
