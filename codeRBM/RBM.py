@@ -63,7 +63,7 @@ class RBM:
     Returns:
     '''
     self.w_ij, self.a, self.b = W, a, b
-    self.trained = True
+    self.trained = True 
 
   def train(self, data, numEpochs, trainRate, biasesTo0=False, allParams=False,
             l1RegWeight=0, momentum=0, log_interval=10):

@@ -7,13 +7,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from codeRBM.RBM import RBM
 
-plt.rcParams['figure.figsize'] = (15.0, 20.0)
+# plt.rcParams['figure.figsize'] = (15.0, 20.0)
 plt.style.use('dark_background')
 
 # plot flags
-PLOT_BIASES = True
+PLOT_BIASES = False
 PLOT_WEIGHTS = True
-PLOT_RECON = True
+PLOT_RECON = True 
 
 # load Ising model samples
 dataOrig = np.load(
@@ -67,12 +67,14 @@ if PLOT_BIASES:
 # Plot wijs
 wijs1st = W_ijs1st.T
 if PLOT_WEIGHTS:
-    plt.rcParams['figure.figsize'] = (20.0, 20.0)
     print("wijs1st shape =", wijs1st.shape)
-    for i in range(100):
-        plt.subplot(10, 10, i + 1)
-        plt.imshow(wijs1st[i].reshape(40, 40))
-    plt.show()
+    fig, ax = plt.subplots(10, 10, sharex='col', sharey='row')
+    fig.set_size_inches(20, 20)
+    for i in range(10):
+        for j in range(10):
+            ind = 10 * i + j
+            ax[i, j].imshow(wijs1st[ind].reshape(40, 40))
+    fig.show()
 
 # %%############################################################################
 # SECOND LAYER RBM
@@ -107,25 +109,29 @@ if PLOT_BIASES:
     plt.imshow(bb2nd.reshape(10, 10))
     plt.show()
 
-
 wijs2nd = W_ijs2nd.T
 if PLOT_WEIGHTS:
-    plt.rcParams['figure.figsize'] = (15.0, 20.0)
     print("wijs2nd shape =", wijs2nd.shape)
-    for i in range(20):
-        plt.subplot(10, 10, i + 1)
-        plt.imshow(wijs2nd[i].reshape(20, 20))
-    plt.show()
+
+    fig, ax = plt.subplots(2, 10, sharex='col', sharey='row')
+    fig.set_size_inches(10, 3)
+    for i in range(2):
+        for j in range(10):
+            ind = 10 * i + j
+            ax[i, j].imshow(wijs2nd[ind].reshape(20, 20))
+    fig.show()
 
 # reconstruction of full receptor fields
 recept2nd = [(1 / 4e2) * np.dot(wijs2nd[i, :], wijs1st) for i in range(n_h2)]
 
 if PLOT_RECON:
-    plt.rcParams['figure.figsize'] = (15.0, 20.0)
-    for i in range(50):
-        plt.subplot(10, 5, i + 1)
-        plt.imshow(recept2nd[i].reshape(40, 40))
-    plt.show()
+    fig, ax = plt.subplots(10, 5, sharex='col', sharey='row')
+    fig.set_size_inches(8, 16)
+    for i in range(10):
+        for j in range(5):
+            ind = 10 * i + j
+            ax[i, j].imshow(recept2nd[ind].reshape(40, 40))
+    fig.show()
 
 # %%############################################################################
 # THIRD LAYER RBM
@@ -144,12 +150,12 @@ numEpochs, learnRate, regWeight, mom, logInt = 100, 0.2, 0.0008, 0.9, 1
 # train for numEpochs, at learnRate
 W_ijs3rd, aa3rd, bb3rd = rbm3rd.train(data3rd, numEpochs, learnRate, True,
                                       False, regWeight, mom, logInt)
-np.savez_compressed("data/couplingsL3.npz", W_ijs3rd, aa3rd, bb3rd)
+# np.savez_compressed("data/couplingsL3.npz", W_ijs3rd, aa3rd, bb3rd)
 
-W_ijs3rd = np.squeeze(np.load("data/couplingsL3.npz")['arr_0'], axis=0)
-aa3rd    = np.squeeze(np.load("data/couplingsL3.npz")['arr_1'], axis=0)
-bb3rd    = np.squeeze(np.load("data/couplingsL3.npz")['arr_2'], axis=0)
-rbm3rd.setParams(W_ijs3rd, aa3rd, bb3rd)
+# W_ijs3rd = np.squeeze(np.load("data/couplingsL3.npz")['arr_0'], axis=0)
+# aa3rd    = np.squeeze(np.load("data/couplingsL3.npz")['arr_1'], axis=0)
+# bb3rd    = np.squeeze(np.load("data/couplingsL3.npz")['arr_2'], axis=0)
+# rbm3rd.setParams(W_ijs3rd, aa3rd, bb3rd)
 
 if PLOT_BIASES:
     # Vis unit biases (a)
@@ -164,23 +170,28 @@ if PLOT_BIASES:
 
 wijs3rd = W_ijs3rd.T
 if PLOT_WEIGHTS:
-    plt.rcParams['figure.figsize'] = (15.0, 20.0)
     print("wijs3rd shape=", wijs3rd.shape)
-    for i in range(25):
-        plt.subplot(10, 10, i + 1)
-        plt.imshow(wijs3rd[i].reshape(10, 10))
-    plt.show()
+    fig, ax = plt.subplots(5, 5, sharex='col', sharey='row')
+    fig.set_size_inches(10, 10)
+    for i in range(5):
+        for j in range(5):
+            ind = 5 * i + j
+            ax[i, j].imshow(wijs3rd[ind].reshape(10, 10))
+    fig.show()
 
 # reconstruction of full receptor fields
 recept3rd = [(1 / 4e4) * np.dot(np.dot(wijs3rd[i, :], wijs2nd), wijs1st) for i
              in range(n_h3)]
 
 if PLOT_RECON:
-    plt.rcParams['figure.figsize'] = (15.0, 8.0)
-    for i in range(25):
-        plt.subplot(3, 10, i + 1)
-        plt.imshow(recept3rd[i].reshape(40, 40))
-    plt.show()
+    fig, ax = plt.subplots(5, 5, sharex='col', sharey='row')
+    fig.set_size_inches(10, 10)
+    for i in range(5):
+        for j in range(5):
+            ind = 5 * i + j
+            ax[i, j].imshow(recept3rd[ind].reshape(40, 40))
+    fig.show()
+
 
 # %%############################################################################
 # RECONSTRUCT DATA (improperly)

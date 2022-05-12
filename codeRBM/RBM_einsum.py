@@ -109,64 +109,41 @@ class RBM:
       for batch in batches:
         # probability that hidden unit is 1
         # Gives (n_h x bs) matrix
-        # OLD
-        pHidData = self._logistic(np.dot(self.w_ij.T, batch) + self.b)
-        # EINSUM
-        pHidData_e = self._logistic(np.einsum('vh,vs->hs', self.w_ij, batch) +
-                                  self.b)
+        pHidData_e = self._logistic(np.einsum('vh,vs->hs', self.w_ij, batch,
+                                              optimize=True) + self.b)
 
         # draw a sample from pHidData
-        # OLD
-        sampHidData = np.random.binomial(1, pHidData)
-        # EINSUM
-        sampHidData_e = sampHidData
+        sampHidData_e = np.random.binomial(1, pHidData_e)
 
         # reconstructed visible pdf from the hidden data sample
-        # OLD
-        pVisRecon = self._logistic(np.dot(self.w_ij, sampHidData) + self.a)
-        # EINSUM
         pVisRecon_e = self._logistic(np.einsum('vh,hs->vs',self.w_ij,
-                                             sampHidData_e) + self.a)
+                                             sampHidData_e, optimize=True) + self.a)
 
         # sample of this pdf
-        # OLD
-        sampVisRecon = np.random.binomial(1, pVisRecon)
-        #EINSUM
-        sampVisRecon_e = sampVisRecon
+        sampVisRecon_e = np.random.binomial(1, pVisRecon_e)
 
         # reconstructed hidden pdf
-        # OLD
-        pHidRecon = self._logistic(np.dot(self.w_ij.T, pVisRecon) + self.b)
-        # EINSUM
-        pHidRecon_e = self._logistic(np.einsum('vh,vs->hs',self.w_ij,
-                                             pVisRecon_e) + self.b)
+        pHidRecon_e = self._logistic(np.einsum('vh,vs->hs',self.w_ij, pVisRecon_e,
+                                               optimize=True) + self.b)
 
         # <v h> correlations for data and reconstructed
-        # OLD
-        visHidCorrData = (1. / self.bs) * np.dot(batch, pHidData.T)
-        # EINSUM
         visHidCorrData_e = (1. / self.bs) * np.einsum('vs,hs->vh',batch,
-                                                      pHidData_e)
+                                                      pHidData_e, optimize=True)
 
-
-        # OLD
-        visHidCorrRecon = (1. / self.bs) * np.dot(pVisRecon, pHidRecon.T)
-        # EINSUM
         visHidCorrRecon_e = (1. / self.bs) * np.einsum('vs,hs->vh',
                                                        pVisRecon_e,
-                                                       pHidRecon_e)
-
+                                                       pHidRecon_e, optimize=True)
 
         # gradient ascent on parameters, with opt L1 regularization
         # TODO check minus sign
-        v = momentum * v + trainRate * (visHidCorrData - visHidCorrRecon -
+        v = momentum * v + trainRate * (visHidCorrData_e - visHidCorrRecon_e -
                                         l1RegWeight * np.sign(self.w_ij))
         self.w_ij += v
         if biasesTo0 is False:
           self.a += (trainRate / self.bs) * \
-                    np.sum(batch - pVisRecon, axis=1, keepdims=True)
+                    np.sum(batch - pVisRecon_e, axis=1, keepdims=True)
           self.b += (trainRate / self.bs) * \
-                    np.sum(pHidData - pHidRecon, axis=1, keepdims=True)
+                    np.sum(pHidData_e - pHidRecon_e, axis=1, keepdims=True)
 
       # log weights during training if 'allParams' is set
       if allParams == True and i % log_interval == 0:
@@ -195,25 +172,17 @@ class RBM:
     assert (vis.shape[0] == self.n_v)
 
     # Calculate final hidden activations from final model
-    # OLD
-    result = self._logistic(np.dot(self.w_ij.T, vis) + self.b)
-    # EINSUM
-    result_e = self._logistic(np.einsum('vh,vs->hs', self.w_ij, vis) + self.b)
-
-    return result
-
+    result_e = self._logistic(np.einsum('vh,vs->hs', self.w_ij, vis, optimize=True) +
+                              self.b)
+    return result_e
 
   def hTov(self, hid):
     assert (self.trained == True)
     assert (hid.shape[0] == self.n_h)
 
     # Figure out what biases to put in here (compare vToH function, above)
-    # OLD
-    result =  self._logistic(np.dot(self.w_ij, hid))
-    # EINSUM
-    result_e = self._logistic(np.einsum('vh,hs->vs', self.w_ij, hid))
-
-    return result
+    result_e = self._logistic(np.einsum('vh,hs->vs', self.w_ij, hid, optimize=True))
+    return result_e
 
   def _logistic(self, x):
     return 1.0 / (1 + np.exp(-x))
